@@ -1,0 +1,2 @@
+C:/Users/User/Desktop/UTeM/SEM 4/PSM/Apps/fyp/android/app/.cxx/Debug/6k1f4z3r/x86/CMakeFiles/edit_cache.dir
+C:/Users/User/Desktop/UTeM/SEM 4/PSM/Apps/fyp/android/app/.cxx/Debug/6k1f4z3r/x86/CMakeFiles/rebuild_cache.dir
