@@ -19,6 +19,7 @@ dependencies:
   crypto: ^3.0.3
   http: ^0.13.6
   path_provider: ^2.0.9
+  
    
 
   cupertino_icons: ^1.0.8
@@ -34,6 +35,8 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - assets/icons/
+    - assets/gif/
   
   fonts:
     - family: Minasans

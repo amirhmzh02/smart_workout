@@ -7,7 +7,7 @@ class LoginController {
   
   static const _storage = FlutterSecureStorage();
   static const _apiUrl =
-      'http://192.168.0.246/Bolt-API/login.php'; // Special IP for Android emulator
+      'http://192.168.0.26/Bolt-API/login.php'; // Special IP for Android emulator
 
   Future<(bool success, String message)> login({
     required String email,

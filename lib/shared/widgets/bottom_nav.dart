@@ -14,51 +14,58 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 100,
       decoration: BoxDecoration(
-        color: AppColors.background,
-        border: Border(top: BorderSide(color: Colors.grey.shade800, width: 1)),
+        color: AppColors.lightbackground,
       ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           // Bottom Bar Content
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // Home Button
               _buildNavItem(
-                label: 'HOME', 
+                activeIcon: 'assets/icons/home_active.png',
+                inactiveIcon: 'assets/icons/home.png',
                 isActive: currentIndex == 0,
                 index: 0,
+                label: 'home',
               ),
-              
+
               // Plan Button
               _buildNavItem(
-                label: 'PLAN', 
+                activeIcon: 'assets/icons/plan_active.png',
+                inactiveIcon: 'assets/icons/plan.png',
                 isActive: currentIndex == 1,
                 index: 1,
+                label: 'plan',
               ),
-              
+
               // Empty space for middle button
-              const SizedBox(width: 60),
-              
-              // Explore Button (inactive)
+              const SizedBox(width: 25),
+
+              // Explore Button
               _buildNavItem(
-                label: 'EXPLORE', 
-                isActive: false,
+                activeIcon: 'assets/icons/explore_active.png',
+                inactiveIcon: 'assets/icons/explore.png',
+                isActive: currentIndex == 3,
                 index: 3,
+                label: 'explore',
               ),
-              
-              // Me Button (inactive)
+
+              // Me Button
               _buildNavItem(
-                label: 'ME', 
-                isActive: false,
+                activeIcon: 'assets/icons/me_active.png',
+                inactiveIcon: 'assets/icons/me.png',
+                isActive: currentIndex == 4,
                 index: 4,
+                label: 'me',
               ),
             ],
           ),
-          
+
           // Center Floating Button
           Positioned(
             left: MediaQuery.of(context).size.width / 2 - 30,
@@ -66,8 +73,8 @@ class CustomBottomNav extends StatelessWidget {
             child: GestureDetector(
               onTap: () => onTap(2),
               child: Container(
-                height: 60,
-                width: 60,
+                width: 70,
+                height: 70,
                 decoration: BoxDecoration(
                   color: AppColors.pink,
                   shape: BoxShape.circle,
@@ -79,36 +86,50 @@ class CustomBottomNav extends StatelessWidget {
                     )
                   ],
                 ),
-                child: const Icon(
-                  Icons.play_arrow,
-                  color: Colors.white,
-                  size: 30,
+                child: FittedBox(
+                  // ← This forces the child to respect constraints
+                  fit: BoxFit.scaleDown, // Prevents over-scaling
+                  child: SizedBox(
+                    width: 60, // Your desired GIF width
+                    height: 60, // Your desired GIF height
+                    child: Image.asset(
+                      'assets/gif/workout.gif',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
   }
 
   Widget _buildNavItem({
-    required String label,
+    required String activeIcon,
+    required String inactiveIcon,
     required bool isActive,
     required int index,
+    required String label, // Add this parameter
   }) {
     return GestureDetector(
       onTap: () => onTap(index),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Image.asset(
+            isActive ? activeIcon : inactiveIcon,
+            width: 25,
+            height: 24,
+            color: isActive ? AppColors.pink : Colors.grey,
+          ),
+          const SizedBox(height: 4), // Small gap between icon and label
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+              fontSize: 10, // Small font size
               color: isActive ? AppColors.pink : Colors.grey,
-              fontFamily: AppFonts.primary,
             ),
           ),
           if (isActive)
