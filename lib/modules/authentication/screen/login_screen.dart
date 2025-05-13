@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/authentication/controller/login_controller.dart';
 import 'package:fyp/modules/authentication/screen/signup_screen.dart';
+import 'package:fyp/modules/FirtTimeUser/firstTimeUser_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   Future<void> _submit() async {
-     print("di tekan");
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -28,11 +28,26 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (success) {
-      print("hellooo");
-      Navigator.pushReplacement(
+      
+
+      try {
+        await UserController().fetchAndStoreUserData();
+      } catch (e) {
+        print(e);
+      }
+      int firstTimeUser = await UserController.FirstTimeUser();
+      if (firstTimeUser == 1) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const FirstTimeUserScreen()),
+        );
+      }else{
+        Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const MainNav()),
       );
+      }
+      
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),

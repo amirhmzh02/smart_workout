@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class SignUpController {
-  static const _apiUrl = 'http://192.168.0.26/Bolt-API/signup.php';
+  static const _apiUrl = 'http://$activeIP/signup.php';
 
   Future<(bool success, String message)> signUp({
     required String email,
