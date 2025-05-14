@@ -9,6 +9,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String userName = 'USER';
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final name = await UserController.getUsername();
+    setState(() {
+      userName = name ?? 'User';  // Default to 'User' if no name is found
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -28,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Text on the right
                   RichText(
                     textAlign: TextAlign.right,
-                    text: const TextSpan(
+                    text: TextSpan(
                       children: [
                         TextSpan(
                           text: 'welcome\n',
@@ -40,8 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         TextSpan(
-                          text: 'USER',
-                          style: TextStyle(
+                          text: userName,
+                          style: const TextStyle(
                             color: AppColors.white,
                             fontFamily: AppFonts.primary,
                             fontSize: 20,

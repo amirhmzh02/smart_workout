@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fyp/modules/authentication/screen/login_screen.dart';
-import 'package:fyp/modules/main_nav.dart'; // Import your MainNav
+import 'package:fyp/modules/main_nav.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/authentication/screen/signup_screen.dart';
+import 'package:fyp/modules/FirtTimeUser/result_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
+
+// ========== DEV CONFIG ==========
+// Set this to quickly change which screen shows first during dev
+enum DevStartScreen {
+  authWrapper,
+  login,
+  signup,
+  mainNav,
+  result,
+}
+
+// Easily change this to pick your start screen
+const DevStartScreen DEV_START_SCREEN = DevStartScreen.login;
+// =================================
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,7 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: _buildAppTheme(),
-      home: const AuthWrapper(), // Handles auth routing
+      home: _getStartScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/main': (context) => const MainNav(),
@@ -42,6 +57,20 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+
+  Widget _getStartScreen() {
+    switch (DEV_START_SCREEN) {
+      case DevStartScreen.login:
+        return const LoginScreen();
+      case DevStartScreen.signup:
+        return const SignUpScreen();
+      case DevStartScreen.mainNav:
+        return const MainNav();
+      case DevStartScreen.authWrapper:
+      default:
+        return const AuthWrapper();
+    }
+  }
 }
 
 class AuthWrapper extends StatefulWidget {
@@ -64,6 +93,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Future<void> _checkAuthStatus() async {
     final userId = await _storage.read(key: 'userId');
+    if (userId != null) {
+      await UserController().fetchAndStoreUserData();
+    }
+
     setState(() {
       _isLoggedIn = userId != null;
       _isLoading = false;

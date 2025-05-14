@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
-import 'package:fyp/shared/widgets/bottom_nav.dart';
+import 'package:fyp/shared/widgets/plan_tab_widget.dart';
 
 class PlanScreen extends StatelessWidget {
   const PlanScreen({super.key});
@@ -8,23 +8,28 @@ class PlanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background, // Using your defined background color
+      backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Container(
-          // Your home screen content will go here
-          child: Center(
-            child: Text(
-              'Plan Screen Content',
-              style: TextStyle(
-                color: AppColors.white, // Using your defined white color
-                fontSize: 24,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              // Main content with tabs
+              Expanded(
+                child: Container(
+                  
+                  child: const Padding(
+                    padding: EdgeInsets.all(2.0),
+                    child: PlanTabWidget(),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
-
-  
 }

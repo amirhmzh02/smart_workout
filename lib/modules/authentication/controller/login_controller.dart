@@ -2,12 +2,10 @@ import 'package:fyp/modules/global_import.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 // import 'package:crypto/crypto.dart';
-
 class LoginController {
   
   static const _storage = FlutterSecureStorage();
-  static const _apiUrl =
-      'http://192.168.0.26/Bolt-API/login.php'; // Special IP for Android emulator
+  static const _apiUrl = 'http://$activeIP/login.php'; // Special IP for Android emulator
 
   Future<(bool success, String message)> login({
     required String email,

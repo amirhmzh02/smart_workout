@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/home/home_screen.dart';
 import 'package:fyp/modules/plan/plan_screen.dart';
+import 'package:fyp/modules/profile/user_profile.dart';
 
 class MainNav extends StatefulWidget {
   const MainNav({super.key});
@@ -19,8 +20,7 @@ class _MainNavState extends State<MainNav> {
     Container(), // Empty placeholder for center button
     // Placeholder for explore (inactive)
     const PlaceholderWidget(label: "Explore (Coming Soon)"),
-    // Placeholder for profile (inactive)
-    const PlaceholderWidget(label: "Profile (Coming Soon)"),
+    const ProfileScreen(),
   ];
 
   @override
@@ -28,16 +28,16 @@ class _MainNavState extends State<MainNav> {
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: CustomBottomNav(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          if (index == 2) { // Center button
-            _showStartWorkoutDialog();
-          } else if (index <= 1) { // Only Home (0) and Plan (1) are active
-            setState(() => _currentIndex = index);
-          }
-          // Indexes 3 (Explore) and 4 (Me) are intentionally ignored
-        },
-      ),
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            if (index == 2) {
+              // Center button
+              _showStartWorkoutDialog();
+            } else if (index != 3) {
+              // Allow all tabs except Explore (index 3)
+              setState(() => _currentIndex = index);
+            }
+          }),
     );
   }
 
