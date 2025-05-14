@@ -5,7 +5,7 @@ import 'package:fyp/modules/global_import.dart';
 
 class UserController {
   static const _storage = FlutterSecureStorage();
-  static const _apiUrl = 'http://$activeIP/get_user.php';
+  static const _apiUrl = 'http://$activeIP/get_user.php'; //tuka sini
 
 Future<Map<String, dynamic>?> fetchAndStoreUserData() async {
   print("Fetching user data...");
