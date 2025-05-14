@@ -3,6 +3,7 @@ import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/authentication/controller/login_controller.dart';
 import 'package:fyp/modules/authentication/screen/signup_screen.dart';
 import 'package:fyp/modules/FirtTimeUser/firstTimeUser_screen.dart';
+import 'package:fyp/modules/FirtTimeUser/firstTimeUser_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
