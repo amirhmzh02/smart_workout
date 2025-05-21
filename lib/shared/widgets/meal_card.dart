@@ -17,13 +17,7 @@ class MealCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.lightbackground,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),

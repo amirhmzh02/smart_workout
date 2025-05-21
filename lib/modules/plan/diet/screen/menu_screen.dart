@@ -3,7 +3,7 @@ import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/shared/widgets/meal_card.dart';
 import 'package:fyp/shared/models/meal_model.dart';
 import 'package:fyp/modules/plan/diet/controller/menu_controller.dart';
-
+import 'package:fyp/modules/plan/diet/screen/createMenu_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -16,6 +16,7 @@ class _MenuScreenState extends State<MenuScreen> {
   late Future<List<Meal>> _mealsFuture;
   final menuController _apiService = menuController();
   final storage = FlutterSecureStorage();
+  List<bool> _selectedMeals = [];
 
   @override
   void initState() {
@@ -24,13 +25,36 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   Future<List<Meal>> _fetchMeals() async {
-  final userId = await storage.read(key: 'userId');
+    final userId = await storage.read(key: 'userId');
     if (userId == null) throw Exception('User not logged in');
-    return await _apiService.getMealPlan(userId);
+
+    final meals = await _apiService.getMealPlan(userId);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _selectedMeals = List<bool>.filled(meals.length, false);
+        });
+      }
+    });
+
+    return meals;
   }
+
+  void _onEditMeal(Meal meal) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => CreateMenuScreen(meal: meal),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -60,7 +84,7 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Meal cards
+              // Meal cards with swipe to edit and selectable by tapping
               Expanded(
                 child: FutureBuilder<List<Meal>>(
                   future: _mealsFuture,
@@ -73,13 +97,89 @@ class _MenuScreenState extends State<MenuScreen> {
                       return const Center(child: Text('No meals planned today'));
                     }
 
+                    final meals = snapshot.data!;
                     return ListView.builder(
-                      itemCount: snapshot.data!.length,
+                      itemCount: meals.length,
                       itemBuilder: (context, index) {
-                        return MealCard(meal: snapshot.data![index]);
+                        final meal = meals[index];
+                        final isSelected = index < _selectedMeals.length && _selectedMeals[index];
+
+                        return Dismissible(
+                          key: ValueKey(meal.id ?? index),
+                          direction: DismissDirection.endToStart, // swipe left only
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            color: AppColors.background,
+                            child: const Icon(Icons.edit, color: Colors.white),
+                          ),
+                          confirmDismiss: (direction) async {
+                            if (direction == DismissDirection.endToStart) {
+                              _onEditMeal(meal);
+                              return false; // prevent dismissal, only trigger edit
+                            }
+                            return false;
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (index < _selectedMeals.length) {
+                                  _selectedMeals[index] = !_selectedMeals[index];
+                                }
+                              });
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              decoration: BoxDecoration(
+                                color: isSelected ? AppColors.pink : AppColors.background,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected ? AppColors.pink : Colors.transparent,
+                                  width: 2,
+                                ),
+                              ),
+                              child: MealCard(meal: meal),
+                            ),
+                          ),
+                        );
                       },
                     );
                   },
+                ),
+              ),
+
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final selectedIndexes = _selectedMeals
+                        .asMap()
+                        .entries
+                        .where((e) => e.value)
+                        .map((e) => e.key)
+                        .toList();
+                    debugPrint("Selected indexes: $selectedIndexes");
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.pink,
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.02,
+                      horizontal: screenWidth * 0.1,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Confirm',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: screenHeight * 0.022,
+                      fontFamily: AppFonts.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
