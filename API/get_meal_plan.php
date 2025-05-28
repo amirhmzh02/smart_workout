@@ -33,8 +33,8 @@ try {
         throw new Exception("No dietary plan found for user $userId");
     }
 
-    $minCalories = (int)$dietPlan['min_calories_per_day'];
-    $maxCalories = (int)$dietPlan['max_calories_per_day'];
+    $minCalories = (int) $dietPlan['min_calories_per_day'];
+    $maxCalories = (int) $dietPlan['max_calories_per_day'];
     $targetCalories = ($minCalories + $maxCalories) / 2;
 
     error_log("User $userId | Target calories: $targetCalories (Min: $minCalories, Max: $maxCalories)");
@@ -50,11 +50,11 @@ try {
     ];
 
     $mealPlan = [];
-    
+
     foreach ($mealTypes as $type) {
-        $target = (int)($targetCalories * $calorieDistribution[$type]);
-        $lower = (int)($target * 0.7);  // 30% below target
-        $upper = (int)($target * 1.3);  // 30% above target
+        $target = (int) ($targetCalories * $calorieDistribution[$type]);
+        $lower = (int) ($target * 0.7);  // 30% below target
+        $upper = (int) ($target * 1.3);  // 30% above target
 
         error_log("Searching $type meals | Target: $target | Range: $lower-$upper");
 
@@ -87,17 +87,22 @@ try {
         if ($meal) {
             // Get ingredients
             $stmt = $pdo->prepare("
-                SELECT i.ingredient_name, mi.quantity 
-                FROM meal_ingredient mi
-                JOIN ingredient i ON mi.ingredient_id = i.ingredient_id
-                WHERE mi.meal_id = ?
+                SELECT i.ingredient_id, i.ingredient_name, mi.quantity 
+FROM meal_ingredient mi
+JOIN ingredient i ON mi.ingredient_id = i.ingredient_id
+WHERE mi.meal_id = ?;
+
             ");
             $stmt->execute([$meal['meal_id']]);
             $ingredients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Format ingredients
-            $ingredientList = array_map(function($ing) {
+            $ingredientList = array_map(function ($ing) {
                 return round($ing['quantity'], 2) . 'g ' . $ing['ingredient_name'];
+            }, $ingredients);
+
+            $ingredientIdList = array_map(function ($ing) {
+                return $ing['ingredient_id'];  // or use actual ID if needed
             }, $ingredients);
 
             $mealPlan[] = [
@@ -105,8 +110,10 @@ try {
                 'meal_type' => ucfirst($meal['meal_type']),
                 'name' => $meal['meal_name'],
                 'calories' => $meal['calories'] . ' kcal',
-                'ingredients' => $ingredientList
+                'ingredients' => $ingredientList,
+                'ingredients_id' => $ingredientIdList // Add this line
             ];
+
 
             error_log("Added $type meal: {$meal['meal_name']} ({$meal['calories']} kcal)");
         } else {
