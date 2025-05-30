@@ -4,7 +4,7 @@ import 'package:fyp/shared/models/meal_model.dart';
 
 class MealCard extends StatelessWidget {
   final Meal meal;
-  
+
   const MealCard({
     super.key,
     required this.meal,
@@ -12,18 +12,24 @@ class MealCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final int length = meal.ingredients.length;
+    final List<double> quantities = meal.quantities;
+
+    // Determine if the meal is updated (i.e., has quantities > 0)
+    final bool isUpdated = quantities.isNotEmpty && quantities.any((q) => q > 0);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: AppColors.lightbackground,
         borderRadius: BorderRadius.circular(12),
-        
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Meal type & calories
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -47,6 +53,8 @@ class MealCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+
+            // Meal name
             Text(
               meal.name,
               style: const TextStyle(
@@ -57,35 +65,43 @@ class MealCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            // Bullet point list of ingredients (now using List<String> directly)
-            ...meal.ingredients.map((ingredient) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8, top: 2),
-                    child: Text(
-                      '•',
-                      style: TextStyle(
-                        color: AppColors.pink,
-                        fontSize: 16,
+
+            // Ingredients list
+            ...List.generate(length, (i) {
+              final ingredientName = meal.ingredients[i];
+              final hasQuantity = isUpdated && i < quantities.length;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8, top: 2),
+                      child: Text(
+                        '•',
+                        style: TextStyle(
+                          color: AppColors.pink,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      ingredient.trim(),
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 14,
-                        fontFamily: AppFonts.secondary,
+                    Expanded(
+                      child: Text(
+                        hasQuantity
+                            ? '${quantities[i].toStringAsFixed(0)}g $ingredientName'
+                            : ingredientName,
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 14,
+                          fontFamily: AppFonts.secondary,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            )).toList(),
+                  ],
+                ),
+              );
+            }),
           ],
         ),
       ),

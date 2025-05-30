@@ -4,22 +4,45 @@ import 'package:fyp/shared/models/meal_model.dart';
 import 'package:fyp/modules/global_import.dart';
 
 class saveMenuController {
-  final String apiUrl = 'http://$activeIP/save_diary.php'; 
+  final String apiUrl = 'http://$activeIP/save_diary.php';
 
-  Future<void> submitSelectedMeals(String userId, List<Meal> selectedMeals) async {
+  Future<void> submitSelectedMeals(
+      String userId, List<Meal> selectedMeals) async {
     try {
       List<Map<String, dynamic>> diaryEntries = [];
 
       for (var meal in selectedMeals) {
-        for (var ingredientId in meal.ingredientsid) {
-          diaryEntries.add({
-            'user_id': userId,
-            'meal_id': meal.id,
-            'ingredient_id': ingredientId,
-            'date': DateTime.now().toIso8601String().split('T').first,
-          });
+        if (meal.ingredients.length != meal.quantities.length) {
+          debugPrint(
+              "Skipping meal '${meal.name}' due to ingredient-quantity mismatch.");
+          continue;
         }
+
+        final ingredientsString = List.generate(
+          meal.ingredients.length,
+          (i) =>
+              '${meal.quantities[i].toStringAsFixed(0)}g ${meal.ingredients[i]}',
+        ).join(', ');
+
+        // final calories = int.tryParse(meal.calories) ?? 0;
+              debugPrint(jsonEncode({'kcal in controller': meal.calories}));
+
+
+        diaryEntries.add({
+          'user_id': userId,
+          'meal_id': meal.id,
+          'ingredients': ingredientsString,
+          'calories': meal.calories,
+          'date': DateTime.now().toIso8601String().split('T').first,
+        });
+
+        // if (calories == 0) {
+        //   debugPrint("Warning: Calories is 0 for meal ${meal.name}");
+        // }
       }
+
+      debugPrint("Sending diary entries:");
+      debugPrint(jsonEncode({'diary_entries': diaryEntries}));
 
       final response = await http.post(
         Uri.parse(apiUrl),

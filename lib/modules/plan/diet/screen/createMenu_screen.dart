@@ -159,16 +159,16 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
 
       final mealData = {
         'name': _mealNameController.text,
-        'meal_type': 'custom', // <-- Add this line
-        'calories': _totalCalories.round(),
+        'meal_type': 'custom',
+        'calories': _totalCalories.round(), // <- total kcal for full meal
         'ingredients': _selectedIngredients.map((ingredient) {
           return {
             'ingredient_id': ingredient.id,
-            'quantity': ingredient.quantity,
+            'quantity': ingredient.quantity, // <- in grams per ingredient ✅
           };
         }).toList(),
       };
-
+      print("this is meal data ");
       print(mealData);
       final success = await CreateMenuController().saveMeal(mealData);
 
@@ -183,7 +183,9 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
           name: _mealNameController.text,
           ingredients: _selectedIngredients.map((i) => i.name).toList(),
           ingredientsid: _selectedIngredients.map((i) => i.id).toList(),
-
+          quantities: _selectedIngredients
+              .map((i) => i.quantity)
+              .toList(), // pass quantities
           calories: _totalCalories.round().toString(),
         );
 
@@ -374,7 +376,9 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
                                   ),
                                   SizedBox(
                                     width: 100,
-                                    child: TextField(
+                                    child: TextFormField(
+                                      initialValue: ingredient.quantity
+                                          .toStringAsFixed(0),
                                       keyboardType: TextInputType.number,
                                       style: const TextStyle(
                                           color: AppColors.white),
@@ -397,9 +401,6 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
                                         suffixStyle: const TextStyle(
                                             color: AppColors.white),
                                       ),
-                                      controller: TextEditingController(
-                                          text: ingredient.quantity
-                                              .toStringAsFixed(0)),
                                       onChanged: (value) {
                                         final newQuantity =
                                             double.tryParse(value) ?? 0;
@@ -407,7 +408,7 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
                                           setState(() {
                                             _selectedIngredients[index]
                                                 .quantity = newQuantity;
-                                            _calculateNutrition();
+                                            _calculateNutrition(); // recalculate _totalCalories
                                           });
                                         }
                                       },

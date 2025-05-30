@@ -51,9 +51,15 @@ class _MenuScreenState extends State<MenuScreen> {
       ),
     );
 
+    print("this is oneditmeal result");
+    print(result);
+
     if (result != null && result['success'] == true) {
       final Meal updatedMeal = result['meal'];
       final int updatedIndex = result['index'];
+
+      // ✅ Access grams (quantities) here if needed:
+      // print('Ingredient grams: ${updatedMeal.quantities}');
 
       setState(() {
         _mealsFuture = _mealsFuture.then((meals) {
@@ -197,8 +203,27 @@ class _MenuScreenState extends State<MenuScreen> {
                       debugPrint("Type: ${meal.mealType}");
                       debugPrint(
                           "Ingredients id: ${meal.ingredientsid.join(', ')}");
-                      debugPrint("Ingredients: ${meal.ingredients.join(', ')}");
+
+                      // Show ingredient names with grams
+                      if (meal.ingredients.length == meal.quantities.length) {
+                        final formattedIngredients = List.generate(
+                          meal.ingredients.length,
+                          (i) =>
+                              '${meal.quantities[i].toStringAsFixed(0)}g ${meal.ingredients[i]}',
+                        ).join(', ');
+                        debugPrint("Ingredients: $formattedIngredients");
+                      } else {
+                        debugPrint(
+                            "Ingredients: ${meal.ingredients.join(', ')}");
+                      }
+
                       debugPrint("Calories: ${meal.calories}");
+                      
+                      String rawCalories = meal.calories; // e.g., '380 kcal'
+                      int caloriesInt = int.parse(
+                          rawCalories.replaceAll(RegExp(r'[^0-9]'), ''));
+                      debugPrint("Parsed Calorie Int: $caloriesInt");
+
                     }
 
                     // Later: Send to controller/api here
