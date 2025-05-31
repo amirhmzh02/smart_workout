@@ -16,7 +16,8 @@ class MealCard extends StatelessWidget {
     final List<double> quantities = meal.quantities;
 
     // Determine if the meal is updated (i.e., has quantities > 0)
-    final bool isUpdated = quantities.isNotEmpty && quantities.any((q) => q > 0);
+    final bool isUpdated =
+        quantities.isNotEmpty && quantities.any((q) => q > 0);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -43,7 +44,7 @@ class MealCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  meal.calories,
+                  "${meal.calories} kcal",
                   style: const TextStyle(
                     color: AppColors.pink,
                     fontSize: 16,
@@ -56,7 +57,7 @@ class MealCard extends StatelessWidget {
 
             // Meal name
             Text(
-              meal.name,
+              meal.mealname,
               style: const TextStyle(
                 color: AppColors.white,
                 fontSize: 16,

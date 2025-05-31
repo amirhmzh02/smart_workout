@@ -199,7 +199,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
                     for (var meal in selectedMeals) {
                       debugPrint("Selected Meal:");
-                      debugPrint("Name: ${meal.name}");
+                      debugPrint("Name: ${meal.mealname}");
                       debugPrint("Type: ${meal.mealType}");
                       debugPrint(
                           "Ingredients id: ${meal.ingredientsid.join(', ')}");
@@ -218,11 +218,11 @@ class _MenuScreenState extends State<MenuScreen> {
                       }
 
                       debugPrint("Calories: ${meal.calories}");
-                      
-                      String rawCalories = meal.calories; // e.g., '380 kcal'
-                      int caloriesInt = int.parse(
-                          rawCalories.replaceAll(RegExp(r'[^0-9]'), ''));
-                      debugPrint("Parsed Calorie Int: $caloriesInt");
+
+                      // String rawCalories = meal.calories; // e.g., '380 kcal'
+                      // int caloriesInt = int.parse(
+                      //     rawCalories.replaceAll(RegExp(r'[^0-9]'), ''));
+                      // debugPrint("Parsed Calorie Int: $caloriesInt");
 
                     }
 

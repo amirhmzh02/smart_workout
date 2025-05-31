@@ -14,7 +14,7 @@ class saveMenuController {
       for (var meal in selectedMeals) {
         if (meal.ingredients.length != meal.quantities.length) {
           debugPrint(
-              "Skipping meal '${meal.name}' due to ingredient-quantity mismatch.");
+              "Skipping meal '${meal.mealname}' due to ingredient-quantity mismatch.");
           continue;
         }
 
@@ -26,11 +26,14 @@ class saveMenuController {
 
         // final calories = int.tryParse(meal.calories) ?? 0;
               debugPrint(jsonEncode({'kcal in controller': meal.calories}));
+              debugPrint(jsonEncode({'name in controller': meal.mealname}));
 
 
         diaryEntries.add({
           'user_id': userId,
-          'meal_id': meal.id,
+          // 'meal_id': meal.id,
+          'meal_type':meal.mealType,
+          'meal_name':meal.mealname,
           'ingredients': ingredientsString,
           'calories': meal.calories,
           'date': DateTime.now().toIso8601String().split('T').first,

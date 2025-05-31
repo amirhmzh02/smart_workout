@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
+import 'package:fyp/modules/home/screen/diary_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadUserName() async {
     final name = await UserController.getUsername();
     setState(() {
-      userName = name ?? 'User';  // Default to 'User' if no name is found
+      userName = name ?? 'User'; // Default to 'User' if no name is found
     });
   }
 
@@ -116,32 +117,48 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(width: 15),
                   Container(
-                    width: screenWidth * 0.3,
-                    height: screenHeight * 0.15,
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Diet',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontFamily: AppFonts.primary,
-                                  fontWeight: AppFonts.regular,
-                                  color: AppColors.pink)),
-                          Text('plan',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontFamily: AppFonts.primary,
-                                  fontWeight: AppFonts.regular,
-                                  color: Colors.black)),
-                        ],
+                      width: screenWidth * 0.3,
+                      height: screenHeight * 0.15,
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                    ),
-                  )
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DiaryScreen()),
+                          );
+                        },
+                        child: Container(
+                          width: screenWidth * 0.3,
+                          height: screenHeight * 0.15,
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Diet',
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontFamily: AppFonts.primary,
+                                        fontWeight: AppFonts.regular,
+                                        color: AppColors.pink)),
+                                Text('plan',
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontFamily: AppFonts.primary,
+                                        fontWeight: AppFonts.regular,
+                                        color: Colors.black)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ))
                 ],
               ),
 

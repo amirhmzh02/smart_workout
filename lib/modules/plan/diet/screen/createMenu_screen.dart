@@ -22,6 +22,8 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
   List<Ingredient> _allIngredients = [];
   List<Ingredient> _filteredIngredients = [];
   List<Ingredient> _selectedIngredients = [];
+  final storage = FlutterSecureStorage();
+
   Timer? _debounceTimer;
   bool _isLoading = false;
   String _errorMessage = '';
@@ -37,7 +39,7 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
 
   void _initializeData() {
     if (widget.meal != null) {
-      _mealNameController.text = widget.meal!.name;
+      _mealNameController.text = widget.meal!.mealname;
       // Initialize with existing meal ingredients if editing
       // You'll need to adapt this based on your Meal model structure
     }
@@ -156,6 +158,7 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
 
     try {
       setState(() => _isLoading = true);
+      final userId = await storage.read(key: 'userId');
 
       final mealData = {
         'name': _mealNameController.text,
@@ -167,6 +170,8 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
             'quantity': ingredient.quantity, // <- in grams per ingredient ✅
           };
         }).toList(),
+        'is_custom': userId,
+        
       };
       print("this is meal data ");
       print(mealData);
@@ -180,13 +185,13 @@ class _CreateMenuScreenState extends State<CreateMenuScreen> {
         final updatedMeal = Meal(
           id: widget.meal?.id ?? 0,
           mealType: 'custom',
-          name: _mealNameController.text,
+          mealname: _mealNameController.text,
           ingredients: _selectedIngredients.map((i) => i.name).toList(),
           ingredientsid: _selectedIngredients.map((i) => i.id).toList(),
           quantities: _selectedIngredients
               .map((i) => i.quantity)
               .toList(), // pass quantities
-          calories: _totalCalories.round().toString(),
+          calories: _totalCalories.round(),
         );
 
         Navigator.pop(context, {
