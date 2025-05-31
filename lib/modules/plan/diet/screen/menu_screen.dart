@@ -3,6 +3,8 @@ import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/shared/widgets/meal_card.dart';
 import 'package:fyp/shared/models/meal_model.dart';
 import 'package:fyp/modules/plan/diet/controller/menu_controller.dart';
+import 'package:fyp/modules/plan/diet/controller/saveMenu_controller.dart';
+
 import 'package:fyp/modules/plan/diet/screen/createMenu_screen.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -41,14 +43,32 @@ class _MenuScreenState extends State<MenuScreen> {
     return meals;
   }
 
-  void _onEditMeal(Meal meal) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => CreateMenuScreen(meal: meal),
-    ),
-  );
-}
+  void _onEditMeal(Meal meal, int index) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateMenuScreen(meal: meal, menuindex: index),
+      ),
+    );
+
+    print("this is oneditmeal result");
+    print(result);
+
+    if (result != null && result['success'] == true) {
+      final Meal updatedMeal = result['meal'];
+      final int updatedIndex = result['index'];
+
+      // ✅ Access grams (quantities) here if needed:
+      // print('Ingredient grams: ${updatedMeal.quantities}');
+
+      setState(() {
+        _mealsFuture = _mealsFuture.then((meals) {
+          meals[updatedIndex] = updatedMeal;
+          return meals;
+        });
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +114,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('No meals planned today'));
+                      return const Center(
+                          child: Text('No meals planned today'));
                     }
 
                     final meals = snapshot.data!;
@@ -102,11 +123,13 @@ class _MenuScreenState extends State<MenuScreen> {
                       itemCount: meals.length,
                       itemBuilder: (context, index) {
                         final meal = meals[index];
-                        final isSelected = index < _selectedMeals.length && _selectedMeals[index];
+                        final isSelected = index < _selectedMeals.length &&
+                            _selectedMeals[index];
 
                         return Dismissible(
                           key: ValueKey(meal.id ?? index),
-                          direction: DismissDirection.endToStart, // swipe left only
+                          direction:
+                              DismissDirection.endToStart, // swipe left only
                           background: Container(
                             alignment: Alignment.centerRight,
                             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -115,7 +138,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           ),
                           confirmDismiss: (direction) async {
                             if (direction == DismissDirection.endToStart) {
-                              _onEditMeal(meal);
+                              _onEditMeal(meal, index);
                               return false; // prevent dismissal, only trigger edit
                             }
                             return false;
@@ -124,17 +147,22 @@ class _MenuScreenState extends State<MenuScreen> {
                             onTap: () {
                               setState(() {
                                 if (index < _selectedMeals.length) {
-                                  _selectedMeals[index] = !_selectedMeals[index];
+                                  _selectedMeals[index] =
+                                      !_selectedMeals[index];
                                 }
                               });
                             },
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               decoration: BoxDecoration(
-                                color: isSelected ? AppColors.pink : AppColors.background,
+                                color: isSelected
+                                    ? AppColors.pink
+                                    : AppColors.background,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isSelected ? AppColors.pink : Colors.transparent,
+                                  color: isSelected
+                                      ? AppColors.pink
+                                      : Colors.transparent,
                                   width: 2,
                                 ),
                               ),
@@ -152,14 +180,75 @@ class _MenuScreenState extends State<MenuScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final selectedIndexes = _selectedMeals
+                  onPressed: () async {
+                    final snapshot = await _mealsFuture;
+                    final selectedMeals = _selectedMeals
                         .asMap()
                         .entries
                         .where((e) => e.value)
-                        .map((e) => e.key)
+                        .map((e) => snapshot[e.key])
                         .toList();
-                    debugPrint("Selected indexes: $selectedIndexes");
+
+                    if (selectedMeals.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("Please select at least one meal")),
+                      );
+                      return;
+                    }
+
+                    for (var meal in selectedMeals) {
+                      debugPrint("Selected Meal:");
+                      debugPrint("Name: ${meal.mealname}");
+                      debugPrint("Type: ${meal.mealType}");
+                      debugPrint(
+                          "Ingredients id: ${meal.ingredientsid.join(', ')}");
+
+                      // Show ingredient names with grams
+                      if (meal.ingredients.length == meal.quantities.length) {
+                        final formattedIngredients = List.generate(
+                          meal.ingredients.length,
+                          (i) =>
+                              '${meal.quantities[i].toStringAsFixed(0)}g ${meal.ingredients[i]}',
+                        ).join(', ');
+                        debugPrint("Ingredients: $formattedIngredients");
+                      } else {
+                        debugPrint(
+                            "Ingredients: ${meal.ingredients.join(', ')}");
+                      }
+
+                      debugPrint("Calories: ${meal.calories}");
+
+                      // String rawCalories = meal.calories; // e.g., '380 kcal'
+                      // int caloriesInt = int.parse(
+                      //     rawCalories.replaceAll(RegExp(r'[^0-9]'), ''));
+                      // debugPrint("Parsed Calorie Int: $caloriesInt");
+
+                    }
+
+                    // Later: Send to controller/api here
+                    final userId = await storage.read(key: 'userId');
+
+                    if (userId != null) {
+                      await saveMenuController()
+                          .submitSelectedMeals(userId, selectedMeals);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("Meals submitted to diary!")),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content:
+                                Text("User ID not found in secure storage.")),
+                      );
+                    }
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Meals submitted to diary!")),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.pink,
