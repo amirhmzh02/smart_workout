@@ -49,7 +49,7 @@ class _PlanTabWidgetState extends State<PlanTabWidget>
             ),
             indicatorSize:
                 TabBarIndicatorSize.label, // Underline matches text width
-            labelColor: AppColors.pink, // Active tab text color
+            labelColor: AppColors.white, // Active tab text color
             unselectedLabelColor: AppColors.white, // Inactive tab text color
             labelStyle: TextStyle(
               fontFamily: AppFonts.primary,
