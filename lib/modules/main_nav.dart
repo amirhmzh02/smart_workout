@@ -34,7 +34,6 @@ class _MainNavState extends State<MainNav> {
               // Center button
               _showStartWorkoutDialog();
             } else  {
-              // Allow all tabs except Explore (index 3)
               setState(() => _currentIndex = index);
             }
           }),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/plan/diet/screen/diet_screen.dart';
-import 'package:fyp/modules/plan/exercise_screen.dart';
+import 'package:fyp/modules/plan/exercise/screen/workout_screen.dart';
 
 class PlanTabWidget extends StatefulWidget {
   const PlanTabWidget({super.key});
