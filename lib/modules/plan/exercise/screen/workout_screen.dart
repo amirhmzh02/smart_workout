@@ -4,6 +4,7 @@ import 'package:fyp/shared/widgets/workout_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:fyp/shared/widgets/date_picker.dart';
 
 class ExerciseScreen extends StatefulWidget {
   const ExerciseScreen({super.key});
@@ -19,44 +20,65 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   final List<bool> _selectedExercises = [];
   final List<int> _selectedIndices = [];
   bool _isSelectionMode = false;
+  late DateTime _selectedWorkoutDate;
+  String? _restMessage;
+  List<String> _targetMuscles = [];
+  String _capitalize(String s) =>
+      s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : s;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final result = await WorkoutSetupController.checkUser(context);
-      _selectedExercises.addAll(List.filled(_exercises.length, false));
-      if (result == 1) {
-        await fetchExercises(_selectedLocation);
-      }
-    });
-  }
+ @override
+void initState() {
+  super.initState();
 
-  Future<void> fetchExercises(String location) async {
+  _selectedWorkoutDate = DateTime.now(); // Set before using
+
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    final result = await WorkoutSetupController.checkUser(context);
+    _selectedExercises.addAll(List.filled(_exercises.length, false));
+
+    if (result == 1) {
+      int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
+      await fetchExercises(_selectedLocation, weekdayIndex);
+    }
+  });
+}
+
+
+
+  Future<void> fetchExercises(String location ,int weekdayIndex) async {
     final userId = await _storage.read(key: 'userId');
     if (userId == null) return;
+      int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
+
 
     try {
       final response = await http.get(Uri.parse(
-        'http://$activeIP/get_exercise.php?user_id=$userId&location=$location',
+      'http://$activeIP/get_exercise.php?user_id=$userId&location=$location&day=$weekdayIndex',
       ));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
         if (data['success']) {
           setState(() {
+            _targetMuscles = List<String>.from(data['target_muscles'] ?? []);
             _exercises.clear();
-            for (var item in data['exercises']) {
-              _exercises.add({
-                'name': item['exercise_name'],
-                'muscle': item['muscle_groups'],
-                'sets': 3,
-                'reps': 12,
-              });
+
+            if (data['exercises'].isEmpty) {
+              _restMessage = data['message'] ?? 'It\'s a rest day today.';
+            } else {
+              _restMessage = null;
+              for (var item in data['exercises']) {
+                _exercises.add({
+                  'name': item['exercise_name'],
+                  'muscle': item['muscle_groups'],
+                  'sets': 3,
+                  'reps': 12,
+                });
+              }
+              _selectedExercises.clear();
+              _selectedExercises.addAll(List.filled(_exercises.length, false));
             }
-            // Initialize selection list AFTER exercises are loaded
-            _selectedExercises.clear();
-            _selectedExercises.addAll(List.filled(_exercises.length, false));
           });
         }
       }
@@ -79,31 +101,29 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             vertical: screenHeight * 0.03,
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
+              // date picker
               Center(
-                child: Text(
-                  'TARGET',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.white,
-                    fontFamily: AppFonts.primary,
-                  ),
+                child: DaySelector(
+                  startDate: DateTime.now(),
+                  initialDate: _selectedWorkoutDate,
+                  onDateSelected: (date) {
+  setState(() {
+    _selectedWorkoutDate = date;
+  });
+
+  // Convert to index: 0 = Monday, 6 = Sunday
+  int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
+
+  // Now pass the index to the API
+  fetchExercises(_selectedLocation, weekdayIndex); // Add index param
+},
+
                 ),
               ),
-              SizedBox(height: screenHeight * 0.01),
-              Center(
-                child: Text(
-                  'Chest, Shoulder, Triceps',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.white.withOpacity(0.7),
-                    fontFamily: AppFonts.secondary,
-                  ),
-                ),
-              ),
+
               SizedBox(height: screenHeight * 0.03),
 
               // Location Toggle
@@ -112,7 +132,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
@@ -130,82 +149,100 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                     const SizedBox(
                         width: 8), // Spacing between icon and buttons
                     Tooltip(
-                      message:
-                          'hold excersice to select, tap to edit rep/set',
+                      message: 'hold excersice to select, tap to edit rep/set',
                       child: Icon(
                         Icons.info_outline,
                         size: 18,
                         color: AppColors.white.withOpacity(0.7),
                       ),
                     ),
-                    
                   ],
+                ),
+              ),
+
+              SizedBox(height: screenHeight * 0.03),
+              Center(
+                child: Text(
+                  _targetMuscles.isNotEmpty
+                      ? _targetMuscles.map((m) => _capitalize(m)).join(', ')
+                      : '',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.white.withOpacity(0.7),
+                    fontFamily: AppFonts.secondary,
+                  ),
                 ),
               ),
 
               SizedBox(height: screenHeight * 0.03),
 
               // Exercises List
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _exercises.length,
-                separatorBuilder: (context, index) =>
-                    SizedBox(height: screenHeight * 0.02),
-                itemBuilder: (context, index) {
-                  final exercise = _exercises[index];
-                  final isSelected = _selectedIndices.contains(index);
+              _restMessage != null
+                  ? Center(
+                      child: Text(
+                        _restMessage!,
+                        style: TextStyle(fontSize: 16, color: Colors.white70),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _exercises.length,
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: screenHeight * 0.02),
+                      itemBuilder: (context, index) {
+                        final exercise = _exercises[index];
+                        final isSelected = _selectedIndices.contains(index);
 
-                  return GestureDetector(
-                    onTap: () {
-                      if (_isSelectionMode) {
-                        // In selection mode - toggle selection
-                        setState(() {
-                          if (isSelected) {
-                            _selectedIndices.remove(index);
-                            if (_selectedIndices.isEmpty) {
-                              _isSelectionMode = false;
+                        return GestureDetector(
+                          onTap: () {
+                            if (_isSelectionMode) {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedIndices.remove(index);
+                                  if (_selectedIndices.isEmpty) {
+                                    _isSelectionMode = false;
+                                  }
+                                } else {
+                                  _selectedIndices.add(index);
+                                }
+                              });
+                            } else {
+                              _showSetRepPicker(index);
                             }
-                          } else {
-                            _selectedIndices.add(index);
-                          }
-                        });
-                      } else {
-                        // Normal mode - show set/reps picker
-                        _showSetRepPicker(index);
-                      }
-                    },
-                    onLongPress: () {
-                      setState(() {
-                        _isSelectionMode = true;
-                        if (isSelected) {
-                          _selectedIndices.remove(index);
-                        } else {
-                          _selectedIndices.add(index);
-                        }
-                      });
-                    },
-                    child: WorkoutCard(
-                      name: exercise['name'],
-                      muscle: exercise['muscle'],
-                      reps:
-                          '${exercise['sets']} Sets • ${exercise['reps']} Reps',
-                      isSelected: _selectedIndices
-                          .contains(index), // Use one selection method
-                      onSelectionChanged: () {
-                        setState(() {
-                          if (_selectedIndices.contains(index)) {
-                            _selectedIndices.remove(index);
-                          } else {
-                            _selectedIndices.add(index);
-                          }
-                          _isSelectionMode = _selectedIndices.isNotEmpty;
-                        });
+                          },
+                          onLongPress: () {
+                            setState(() {
+                              _isSelectionMode = true;
+                              if (isSelected) {
+                                _selectedIndices.remove(index);
+                              } else {
+                                _selectedIndices.add(index);
+                              }
+                            });
+                          },
+                          child: WorkoutCard(
+                            name: exercise['name'],
+                            muscle: exercise['muscle'],
+                            reps:
+                                '${exercise['sets']} Sets • ${exercise['reps']} Reps',
+                            isSelected: isSelected,
+                            onSelectionChanged: () {
+                              setState(() {
+                                if (_selectedIndices.contains(index)) {
+                                  _selectedIndices.remove(index);
+                                } else {
+                                  _selectedIndices.add(index);
+                                }
+                                _isSelectionMode = _selectedIndices.isNotEmpty;
+                              });
+                            },
+                          ),
+                        );
                       },
                     ),
-                  );
-                },
-              ),
+
               if (_isSelectionMode)
                 Padding(
                   padding: EdgeInsets.only(top: 20),
@@ -224,21 +261,17 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                             _isSelectionMode = false;
                           });
                         },
-                        child: Text('Delete Selected'),
+                        child: Text(
+                          'DONE',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: screenHeight * 0.022,
+                            fontFamily: AppFonts.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.pink,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndices.clear();
-                            _isSelectionMode = false;
-                          });
-                        },
-                        child: Text('Cancel'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.lightbackground,
                         ),
                       ),
                     ],
@@ -251,36 +284,43 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     );
   }
 
-  Widget _buildLocationButton(String location) {
-    final isSelected = _selectedLocation == location;
-    return GestureDetector(
-      onTap: () async {
-        setState(() {
-          _selectedLocation = location;
-        });
-        await fetchExercises(location);
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 8,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.pink : Colors.transparent,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Text(
-          location.toUpperCase(),
-          style: TextStyle(
-            color:
-                isSelected ? AppColors.white : AppColors.white.withOpacity(0.7),
-            fontWeight: FontWeight.bold,
-            fontFamily: AppFonts.primary,
-          ),
+Widget _buildLocationButton(String location) {
+  final isSelected = _selectedLocation == location;
+  
+  return GestureDetector(
+    onTap: () async {
+      setState(() {
+        _selectedLocation = location;
+      });
+
+      // Calculate weekday index from selected date
+      int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
+
+      await fetchExercises(location, weekdayIndex);
+    },
+    child: Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 24,
+        vertical: 8,
+      ),
+      decoration: BoxDecoration(
+        color: isSelected ? AppColors.pink : Colors.transparent,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Text(
+        location.toUpperCase(),
+        style: TextStyle(
+          color: isSelected
+              ? AppColors.white
+              : AppColors.white.withOpacity(0.7),
+          fontWeight: FontWeight.bold,
+          fontFamily: AppFonts.primary,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   void _showSetRepPicker(int index) {
     int selectedSet = _exercises[index]['sets'];
