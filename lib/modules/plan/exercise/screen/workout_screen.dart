@@ -1,5 +1,6 @@
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/plan/exercise/controller/workout_setup_controller.dart';
+import 'package:fyp/modules/plan/exercise/controller/workout_controller.dart';
 import 'package:fyp/shared/widgets/workout_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -26,34 +27,31 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   String _capitalize(String s) =>
       s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : s;
 
- @override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  _selectedWorkoutDate = DateTime.now(); // Set before using
+    _selectedWorkoutDate = DateTime.now(); // Set before using
 
-  WidgetsBinding.instance.addPostFrameCallback((_) async {
-    final result = await WorkoutSetupController.checkUser(context);
-    _selectedExercises.addAll(List.filled(_exercises.length, false));
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final result = await WorkoutSetupController.checkUser(context);
+      _selectedExercises.addAll(List.filled(_exercises.length, false));
 
-    if (result == 1) {
-      int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
-      await fetchExercises(_selectedLocation, weekdayIndex);
-    }
-  });
-}
+      if (result == 1) {
+        int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
+        await fetchExercises(_selectedLocation, weekdayIndex);
+      }
+    });
+  }
 
-
-
-  Future<void> fetchExercises(String location ,int weekdayIndex) async {
+  Future<void> fetchExercises(String location, int weekdayIndex) async {
     final userId = await _storage.read(key: 'userId');
     if (userId == null) return;
-      int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
-
+    int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
 
     try {
       final response = await http.get(Uri.parse(
-      'http://$activeIP/get_exercise.php?user_id=$userId&location=$location&day=$weekdayIndex',
+        'http://$activeIP/get_exercise.php?user_id=$userId&location=$location&day=$weekdayIndex',
       ));
 
       if (response.statusCode == 200) {
@@ -70,10 +68,12 @@ void initState() {
               _restMessage = null;
               for (var item in data['exercises']) {
                 _exercises.add({
+                  'id': item['exercise_id'],
                   'name': item['exercise_name'],
                   'muscle': item['muscle_groups'],
                   'sets': 3,
                   'reps': 12,
+                  'met_value': item['met_value'],
                 });
               }
               _selectedExercises.clear();
@@ -110,17 +110,17 @@ void initState() {
                   startDate: DateTime.now(),
                   initialDate: _selectedWorkoutDate,
                   onDateSelected: (date) {
-  setState(() {
-    _selectedWorkoutDate = date;
-  });
+                    setState(() {
+                      _selectedWorkoutDate = date;
+                    });
 
-  // Convert to index: 0 = Monday, 6 = Sunday
-  int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
+                    // Convert to index: 0 = Monday, 6 = Sunday
+                    int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
 
-  // Now pass the index to the API
-  fetchExercises(_selectedLocation, weekdayIndex); // Add index param
-},
-
+                    // Now pass the index to the API
+                    fetchExercises(
+                        _selectedLocation, weekdayIndex); // Add index param
+                  },
                 ),
               ),
 
@@ -250,12 +250,24 @@ void initState() {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                          // Perform action on selected items
-                          debugPrint('Selected indices: $_selectedIndices');
-                          // Here you could delete, share, etc.
+                        onPressed: () async {
+                          List<Map<String, dynamic>> selectedExercises = [];
+                          for (int i = 0; i < _selectedIndices.length; i++) {
+                            int index = _selectedIndices[i];
+                            if (index >= 0 && index < _exercises.length) {
+                              selectedExercises.add(_exercises[index]);
+                            }
+                          }
 
-                          // Exit selection mode
+                          debugPrint('Selected Exercises Done Today:');
+                          for (var exercise in selectedExercises) {
+                            debugPrint(
+                                '→ ${exercise['id']} → ${exercise['name']} - ${exercise['muscle']} → ${exercise['met_value']} → (${exercise['sets']}x${exercise['reps']})');
+                          }
+
+                          await WorkoutController.sendWorkoutDone(
+                              selectedExercises);
+
                           setState(() {
                             _selectedIndices.clear();
                             _isSelectionMode = false;
@@ -284,43 +296,41 @@ void initState() {
     );
   }
 
-Widget _buildLocationButton(String location) {
-  final isSelected = _selectedLocation == location;
-  
-  return GestureDetector(
-    onTap: () async {
-      setState(() {
-        _selectedLocation = location;
-      });
+  Widget _buildLocationButton(String location) {
+    final isSelected = _selectedLocation == location;
 
-      // Calculate weekday index from selected date
-      int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
+    return GestureDetector(
+      onTap: () async {
+        setState(() {
+          _selectedLocation = location;
+        });
 
-      await fetchExercises(location, weekdayIndex);
-    },
-    child: Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.pink : Colors.transparent,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        location.toUpperCase(),
-        style: TextStyle(
-          color: isSelected
-              ? AppColors.white
-              : AppColors.white.withOpacity(0.7),
-          fontWeight: FontWeight.bold,
-          fontFamily: AppFonts.primary,
+        // Calculate weekday index from selected date
+        int weekdayIndex = (_selectedWorkoutDate.weekday + 6) % 7;
+
+        await fetchExercises(location, weekdayIndex);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.pink : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Text(
+          location.toUpperCase(),
+          style: TextStyle(
+            color:
+                isSelected ? AppColors.white : AppColors.white.withOpacity(0.7),
+            fontWeight: FontWeight.bold,
+            fontFamily: AppFonts.primary,
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   void _showSetRepPicker(int index) {
     int selectedSet = _exercises[index]['sets'];
