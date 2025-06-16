@@ -1,33 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fyp/modules/global_import.dart';
-import 'package:fyp/shared/models/meal_model.dart';
-import 'package:fyp/modules/home/controller/diary_controller.dart';
+import 'package:fyp/shared/models/WorkoutEntry.dart';
+import 'package:fyp/modules/home/controller/exercise_diary_detail_controller.dart';
 
-class DiaryDetailScreen extends StatefulWidget {
+class ExerciseDiaryDetailScreen extends StatefulWidget {
   final String selectedDate;
   final String date;
 
-  const DiaryDetailScreen(
-      {super.key, required this.selectedDate, required this.date});
+  const ExerciseDiaryDetailScreen({
+    super.key,
+    required this.selectedDate,
+    required this.date,
+  });
 
   @override
-  State<DiaryDetailScreen> createState() => _DiaryDetailScreenState();
+  State<ExerciseDiaryDetailScreen> createState() =>
+      _ExerciseDiaryDetailScreenState();
 }
 
-class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
-  final DiaryController _diaryController = DiaryController();
+class _ExerciseDiaryDetailScreenState extends State<ExerciseDiaryDetailScreen> {
+  final ExerciseDiaryController _controller = ExerciseDiaryController();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  List<Meal> _meals = [];
+  List<WorkoutEntry> _workouts = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchMealsForDate();
+    _fetchWorkouts();
   }
 
-  Future<void> _fetchMealsForDate() async {
+  Future<void> _fetchWorkouts() async {
     try {
       final userId = await _storage.read(key: 'userId');
 
@@ -35,17 +39,17 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
         throw Exception('User not logged in');
       }
 
-      final meals = await _diaryController.fetchMealsForDate(
+      final workouts = await _controller.fetchWorkoutEntries(
         userId: userId,
         date: widget.selectedDate,
       );
 
       setState(() {
-        _meals = meals;
+        _workouts = workouts;
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint('Error fetching meals: $e');
+      debugPrint('Error fetching workouts: $e');
       setState(() {
         _isLoading = false;
       });
@@ -54,9 +58,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -65,7 +66,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back button and title
+              // Back and title
               Row(
                 children: [
                   IconButton(
@@ -86,7 +87,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Total calories for the day
+              // Total calories
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -97,7 +98,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'TOTAL CALORIES',
+                      'TOTAL BURNED',
                       style: TextStyle(
                         color: AppColors.white,
                         fontSize: 15,
@@ -108,7 +109,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: _calculateTotalCalories().toString(),
+                            text: _calculateTotalBurn().toString(),
                             style: const TextStyle(
                               fontSize: 20,
                               fontFamily: AppFonts.primary,
@@ -133,14 +134,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Meal cards
+              // Workout cards
               Expanded(
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : _meals.isEmpty
+                    : _workouts.isEmpty
                         ? const Center(
                             child: Text(
-                              'No meals recorded for this day',
+                              'No workouts recorded for this day',
                               style: TextStyle(
                                 color: AppColors.white,
                                 fontSize: 18,
@@ -148,12 +149,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                             ),
                           )
                         : ListView.builder(
-                            itemCount: _meals.length,
+                            itemCount: _workouts.length,
                             itemBuilder: (context, index) {
-                              final meal = _meals[index];
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 16),
-                                child: _buildMealCard(meal),
+                                child: _buildWorkoutCard(_workouts[index]),
                               );
                             },
                           ),
@@ -165,7 +165,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
   }
 
-  Widget _buildMealCard(Meal meal) {
+  Widget _buildWorkoutCard(WorkoutEntry workout) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -175,95 +175,61 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Meal type and name
+          // Exercise name and burn
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                meal.mealType.toUpperCase(),
+                workout.exerciseName,
                 style: const TextStyle(
                   color: AppColors.white,
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  fontFamily: AppFonts.primary,
+                  fontFamily: AppFonts.secondary,
                 ),
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: meal.calories
-                            .toString(), // No need to remove ' kcal'
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontFamily: AppFonts.primary,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: workout.calcBurn.toStringAsFixed(0),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontFamily: AppFonts.primary,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.white,
                       ),
-                      const TextSpan(
-                        text: ' KCAL',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: AppFonts.primary,
-                          fontWeight: FontWeight.normal,
-                          color: AppColors.pink,
-                        ),
+                    ),
+                    const TextSpan(
+                      text: ' KCAL',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: AppFonts.primary,
+                        fontWeight: FontWeight.normal,
+                        color: AppColors.pink,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-
+          const SizedBox(height: 10),
           Text(
-            meal.mealname.isNotEmpty ? meal.mealname : '(No name)',
+            '${workout.sets} sets x ${workout.reps} reps',
             style: const TextStyle(
               color: AppColors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 14,
               fontFamily: AppFonts.secondary,
             ),
           ),
-
-          // Ingredients
-          if (meal.ingredients.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  _formatIngredients(meal),
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 14,
-                    fontFamily: AppFonts.secondary,
-                  ),
-                ),
-              ],
-            ),
-          const SizedBox(height: 12),
+         
         ],
       ),
     );
   }
 
-  String _formatIngredients(Meal meal) {
-    if (meal.ingredients.length == meal.quantities.length) {
-      return List.generate(
-        meal.ingredients.length,
-        (i) =>
-            '• ${meal.quantities[i].toStringAsFixed(0)}g ${meal.ingredients[i]}',
-      ).join('\n');
-    }
-    return meal.ingredients.map((ingredient) => '• $ingredient').join('\n');
-  }
-
-  int _calculateTotalCalories() {
-    return _meals.fold(0, (sum, meal) => sum + (meal.calories ?? 0));
+  int _calculateTotalBurn() {
+    return _workouts.fold(0, (sum, item) => sum + item.calcBurn.toInt());
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/home/screen/diary_screen.dart';
+import 'package:fyp/modules/home/screen/ExerciseDiary_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -101,66 +102,69 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 20),
 
-              // Placeholder for DateWidget
-              const Placeholder(
-                fallbackHeight: 60,
-                color: AppColors.pink,
-              ),
-
-              const SizedBox(height: 20),
-
               // 2 Small Boxes Row
-              Row(
-                children: [
-                  Expanded(
-                    child: _infoBox("EXERCISE DONE", "0 sec"),
-                  ),
-                  const SizedBox(width: 15),
-                  Container(
-                      width: screenWidth * 0.3,
-                      height: screenHeight * 0.15,
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const DiaryScreen()),
-                          );
-                        },
-                        child: Container(
-                          width: screenWidth * 0.3,
-                          height: screenHeight * 0.15,
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('Diet',
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontFamily: AppFonts.primary,
-                                        fontWeight: AppFonts.regular,
-                                        color: AppColors.pink)),
-                                Text('plan',
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontFamily: AppFonts.primary,
-                                        fontWeight: AppFonts.regular,
-                                        color: Colors.black)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ))
-                ],
-              ),
+             Row(
+  children: [
+    // Make EXERCISE DONE tappable
+    Expanded(
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ExerciseDiaryScreen()),
+          );
+        },
+        child: _infoBox("EXERCISE DONE", "0 sec"),
+      ),
+    ),
+    const SizedBox(width: 15),
+    // Diet plan card
+    Container(
+      width: screenWidth * 0.3,
+      height: screenHeight * 0.15,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const DiaryScreen()),
+          );
+        },
+        child: Container(
+          width: screenWidth * 0.3,
+          height: screenHeight * 0.15,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Diet',
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontFamily: AppFonts.primary,
+                        fontWeight: AppFonts.regular,
+                        color: AppColors.pink)),
+                Text('plan',
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontFamily: AppFonts.primary,
+                        fontWeight: AppFonts.regular,
+                        color: Colors.black)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  ],
+),
+
 
               const SizedBox(height: 15),
 

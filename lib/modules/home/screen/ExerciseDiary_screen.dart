@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
-import 'package:fyp/modules/home/controller/diary_controller.dart';
-import 'package:fyp/modules/home/screen/diaryDetail_screen.dart';
+import 'package:fyp/modules/home/controller/exerciseDiary_controller.dart';
+import 'package:fyp/modules/home/screen/exerciseDisaryDetail_screen.dart';
 
-class DiaryScreen extends StatefulWidget {
-  const DiaryScreen({super.key});
+class ExerciseDiaryScreen extends StatefulWidget {
+  const ExerciseDiaryScreen({super.key});
 
   @override
-  State<DiaryScreen> createState() => _DiaryScreenState();
+  State<ExerciseDiaryScreen> createState() => _ExerciseDiaryScreenState();
 }
 
-class _DiaryScreenState extends State<DiaryScreen> {
-  final DiaryController _diaryController = DiaryController();
+class _ExerciseDiaryScreenState extends State<ExerciseDiaryScreen> {
+  final ExerciseDiaryController _diaryController = ExerciseDiaryController();
   List<Map<String, dynamic>> diaryEntries = [];
   bool isLoading = true;
   DateTime _currentMonth = DateTime.now();
@@ -36,8 +36,8 @@ class _DiaryScreenState extends State<DiaryScreen> {
   void _changeMonth(int delta) {
     setState(() {
       _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + delta);
-      _loadData(); // Reload data when month changes
     });
+    _loadData(); // Reload data when month changes
   }
 
   String _getMonthName(DateTime date) {
@@ -68,7 +68,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Row with "YOUR DIARY" and logo
+              // Header Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -76,17 +76,16 @@ class _DiaryScreenState extends State<DiaryScreen> {
                     icon: const Icon(Icons.arrow_back, color: AppColors.white),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  Text(
-                    'YOUR DIARY',
-                    style: const TextStyle(
+                  const Text(
+                    'WORKOUT DONE',
+                    style: TextStyle(
                       color: AppColors.white,
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       fontFamily: AppFonts.primary,
                     ),
                   ),
-                  const SizedBox(
-                      width: 48), // This balances the space on the right
+                  const SizedBox(width: 48), // For spacing
                 ],
               ),
 
@@ -96,26 +95,23 @@ class _DiaryScreenState extends State<DiaryScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Left arrow
                   IconButton(
-                    icon: Icon(Icons.chevron_left, color: AppColors.white),
+                    icon:
+                        const Icon(Icons.chevron_left, color: AppColors.white),
                     onPressed: () => _changeMonth(-1),
                   ),
-
-                  // Month name
                   Text(
                     _getMonthName(_currentMonth),
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.white,
                       fontFamily: AppFonts.primary,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
-                  // Right arrow
                   IconButton(
-                    icon: Icon(Icons.chevron_right, color: AppColors.white),
+                    icon:
+                        const Icon(Icons.chevron_right, color: AppColors.white),
                     onPressed: () => _changeMonth(1),
                   ),
                 ],
@@ -130,7 +126,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                     : diaryEntries.isEmpty
                         ? const Center(
                             child: Text(
-                              'No diary entries found',
+                              'No workout entries found',
                               style: TextStyle(
                                 color: AppColors.lightbackground,
                                 fontSize: 18,
@@ -159,16 +155,16 @@ class _DiaryScreenState extends State<DiaryScreen> {
   }
 
   Widget _buildDateEntry(Map<String, dynamic> entry) {
-    final date = entry['date']; // "31 MAY"
-    final calories = entry['calories'];
-    final fullDate = entry['full_date']; // "2025-05-30"
+    final date = entry['date'] ?? 'Date';
+    final calories = entry['calories']?.toString() ?? '0';
+    final fullDate = entry['full_date'] ?? '';
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DiaryDetailScreen(
+            builder: (context) => ExerciseDiaryDetailScreen(
               selectedDate: fullDate,
               date: date,
             ),
@@ -176,7 +172,6 @@ class _DiaryScreenState extends State<DiaryScreen> {
         );
       },
       child: Container(
-        // your UI code here, using date and calories as before
         padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
         decoration: BoxDecoration(
           color: AppColors.lightbackground,
@@ -196,13 +191,12 @@ class _DiaryScreenState extends State<DiaryScreen> {
             RichText(
               text: TextSpan(
                 children: [
-                  // Add the image here
                   WidgetSpan(
                     alignment: PlaceholderAlignment.middle,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 10.0),
                       child: Image.asset(
-                        'assets/icons/eat.png', // change this to your image path
+                        'assets/icons/fire.png',
                         width: 25,
                         height: 25,
                       ),
@@ -217,9 +211,9 @@ class _DiaryScreenState extends State<DiaryScreen> {
                       color: AppColors.white,
                     ),
                   ),
-                  TextSpan(
+                  const TextSpan(
                     text: 'KCAL',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10,
                       fontFamily: AppFonts.primary,
                       fontWeight: FontWeight.normal,

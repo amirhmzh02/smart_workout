@@ -23,6 +23,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     'chest',
     'tricep',
     'bicep',
+    'back',
     'core',
     'leg'
   ];

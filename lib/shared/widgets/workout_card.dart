@@ -112,10 +112,10 @@ class _WorkoutCardState extends State<WorkoutCard>
                       Text(
                         widget.name,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: AppColors.white,
-                          fontFamily: AppFonts.primary,
+                          fontFamily: AppFonts.secondary,
                         ),
                       ),
                       if (widget.isSelected)
