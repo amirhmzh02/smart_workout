@@ -40,7 +40,6 @@ class _DietScreenState extends State<DietScreen> {
       return;
     }
     final url = Uri.parse('http://$activeIP/get_user_cal.php');
-    ; // <-- Update this
 
     try {
       final response = await http.post(
@@ -113,35 +112,35 @@ class _DietScreenState extends State<DietScreen> {
     }
   }
 
-Future<void> submitWeight(double weight) async {
-  final userId = await _storage.read(key: 'userId');
-  final url = Uri.parse('http://$activeIP/update_weight.php'); // Adjust this to your API
+  Future<void> submitWeight(double weight) async {
+    final userId = await _storage.read(key: 'userId');
+    final url = Uri.parse(
+        'http://$activeIP/update_weight.php'); // Adjust this to your API
 
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
-      'user_id': userId,
-      'weight': weight,
-      'date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-    }),
-  );
-
-  final data = jsonDecode(response.body);
-
-  if (data['success']) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Weight updated successfully')),
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'weight': weight,
+        'date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      }),
     );
-    // Refresh the chart
-    fetchWeightData(); // Make sure this function fetches updated weightHistory
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(data['message'] ?? 'Failed to update weight')),
-    );
+
+    final data = jsonDecode(response.body);
+
+    if (data['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Weight updated successfully')),
+      );
+      // Refresh the chart
+      fetchWeightData(); // Make sure this function fetches updated weightHistory
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(data['message'] ?? 'Failed to update weight')),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +169,7 @@ Future<void> submitWeight(double weight) async {
                       keyboardType:
                           TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
-                        labelText: 'Enter your weight (kg)',
+                        labelText: 'Your weight (kg)',
                         filled: true,
                         fillColor: AppColors.lightbackground,
                         labelStyle: TextStyle(color: AppColors.white),
@@ -223,15 +222,18 @@ Future<void> submitWeight(double weight) async {
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white),
                           )
-                        : const Text('Submit'),
+                        : const Text(
+                            'Submit',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontFamily: AppFonts.primary,
+                            ),
+                          ),
                   ),
                 ],
               ),
-                            SizedBox(height: screenHeight * 0.04),
-
+              SizedBox(height: screenHeight * 0.04),
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(screenWidth * 0.07),
