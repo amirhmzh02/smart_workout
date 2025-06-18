@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/explore/explore_controller.dart';
-import 'package:fyp/modules/explore/explore_detail_screem.dart';
+import 'package:fyp/modules/explore/explore_detail_screen.dart';
 
 
 class ExploreScreen extends StatefulWidget {
@@ -29,6 +29,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   ];
 
   Future<void> _fetchExercises(String muscleGroup) async {
+
     setState(() {
       _isLoading = true;
       _selectedMuscleGroup = muscleGroup;
@@ -49,6 +50,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMuscleGroup = 'shoulder';        
+    _fetchExercises('shoulder');             
   }
 
   @override
@@ -156,7 +164,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     Text(
                       exercise.exerciseName,
                       style: TextStyle(
-                        fontFamily: AppFonts.primary,
+                        fontFamily: AppFonts.secondary,
                         fontSize: AppFonts.large,
                         fontWeight: AppFonts.bold,
                         color: AppColors.white,
@@ -169,7 +177,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           'assets/icons/explore_active.png',
                           width: 16,
                           height: 16,
-                          color: AppColors.white.withOpacity(0.7),
                         ),
                         SizedBox(width: 10),
                         Text(

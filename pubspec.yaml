@@ -23,6 +23,7 @@ dependencies:
   chewie: ^1.5.0
   fl_chart: ^0.66.0
   intl: ^0.18.1
+  animated_text_kit: ^4.2.2
    
 
   cupertino_icons: ^1.0.8

@@ -224,9 +224,10 @@ class _DietScreenState extends State<DietScreen> {
                             height: 18,
                           )
                         : const Text(
-                            'Submit',
+                            'SUBMIT',
                             style: TextStyle(
                               color: AppColors.white,
+                              fontWeight: AppFonts.bold,
                               fontFamily: AppFonts.primary,
                             ),
                           ),
@@ -298,7 +299,7 @@ class _DietScreenState extends State<DietScreen> {
                     ),
                   ),
                   child: Text(
-                    'View Menu',
+                    'VIEW MENU',
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: screenHeight * 0.022,

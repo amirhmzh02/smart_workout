@@ -4,6 +4,7 @@ import 'package:fyp/modules/home/home_screen.dart';
 import 'package:fyp/modules/plan/plan_screen.dart';
 import 'package:fyp/modules/profile/user_profile.dart';
 import 'package:fyp/modules/explore/explore_screen.dart';
+import 'package:fyp/modules/chatbot/chatbot_screen.dart';
 
 class MainNav extends StatefulWidget {
   const MainNav({super.key});
@@ -41,28 +42,14 @@ class _MainNavState extends State<MainNav> {
   }
 
   void _showStartWorkoutDialog() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        height: 200,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Text(
-              "Start New Workout",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.white,
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Add your workout starting content here
-          ],
-        ),
-      ),
-    );
-  }
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => const ChatbotScreen(),
+  );
+}
+
 }
 
 // Placeholder widget for inactive tabs

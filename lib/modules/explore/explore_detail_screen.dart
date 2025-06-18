@@ -120,27 +120,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               value: widget.exercise.muscleGroups,
             ),
             
-            SizedBox(height: screenHeight * 0.03),
+            SizedBox(height: screenHeight * 0.02),
             
-            // Description
-            Text(
-              'Description',
-              style: TextStyle(
-                fontFamily: AppFonts.primary,
-                fontSize: AppFonts.large,
-                fontWeight: AppFonts.bold,
-                color: AppColors.white,
-              ),
+            _buildInfoRow(
+              icon: Icons.description	,
+              title: 'Description',
+              value: widget.exercise.description
             ),
-            SizedBox(height: screenHeight * 0.01),
-            Text(
-              widget.exercise.description,
-              style: TextStyle(
-                fontFamily: AppFonts.secondary,
-                fontSize: AppFonts.medium,
-                color: AppColors.white.withOpacity(0.8),
-              ),
-            ),
+
             
             SizedBox(height: screenHeight * 0.03),
             
@@ -148,7 +135,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             Text(
               'HOW TO DO',
               style: TextStyle(
-                fontFamily: AppFonts.primary,
+                fontFamily: AppFonts.secondary,
                 fontSize: AppFonts.large,
                 fontWeight: AppFonts.bold,
                 color: AppColors.white,
@@ -192,7 +179,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  fontFamily: AppFonts.primary,
+                  fontFamily: AppFonts.secondary,
                   fontSize: AppFonts.medium,
                   fontWeight: AppFonts.bold,
                   color: AppColors.white,

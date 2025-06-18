@@ -179,10 +179,25 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               // Exercises List
               _restMessage != null
                   ? Center(
-                      child: Text(
-                        _restMessage!,
-                        style: TextStyle(fontSize: 16, color: Colors.white70),
-                        textAlign: TextAlign.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // 👇 Your animated GIF (replace with your asset path or network URL)
+                          Image.asset(
+                            'assets/gif/hammock.gif',
+                            height: 150,
+                            fit: BoxFit.cover,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "ITS A REST DAY",
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.white70,
+                                fontFamily: AppFonts.primary),
+                            textAlign: TextAlign.center,
+                            
+                          ),
+                        ],
                       ),
                     )
                   : ListView.separated(
