@@ -74,9 +74,23 @@ try {
         ':created_date' => $createdDate
     ]);
 
+    $stmt3 = $pdo->prepare("
+    INSERT INTO progresstracking (user_id, date, weight) 
+    VALUES (:user_id, :created_date, :weight)
+    ");
+
+    $stmt3->execute([
+        ':user_id' => $input['user_id'],
+        ':created_date' => $createdDate,
+        ':weight' => $input['weight'],
+        
+    ]);
+
 } catch (PDOException $e) {
     echo json_encode([
         'success' => false,
         'message' => 'Database error: ' . $e->getMessage()
     ]);
 }
+
+

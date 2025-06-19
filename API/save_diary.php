@@ -14,22 +14,25 @@ try {
         throw new Exception("Invalid input: 'diary_entries' is missing or not an array");
     }
 
-    // Prepare statement
+    // Prepare statement (UPDATED: include calories)
     $stmt = $pdo->prepare("
-        INSERT INTO diary (user_id, meal_id, ingredient_id, date)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO diary (user_id,meal_type,meal_name,ingredients, calories, date)
+        VALUES (?, ?, ?,?, ?,?)
     ");
 
     // Insert all entries
     foreach ($data['diary_entries'] as $entry) {
-        if (!isset($entry['user_id'], $entry['meal_id'], $entry['ingredient_id'], $entry['date'])) {
-            continue; // Skip invalid ones
+        if (!isset($entry['user_id'], /*$entry['meal_id'],*/$entry['meal_type'],$entry['meal_name'], $entry['ingredients'], $entry['calories'], $entry['date'])) {
+            continue; // Skip if missing fields
         }
 
         $stmt->execute([
             $entry['user_id'],
-            $entry['meal_id'],
-            $entry['ingredient_id'],
+            // $entry['meal_id'],
+            $entry['meal_type'],
+            $entry['meal_name'],
+            $entry['ingredients'],
+            $entry['calories'],
             $entry['date']
         ]);
     }
