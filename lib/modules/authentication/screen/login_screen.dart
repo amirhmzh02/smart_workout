@@ -121,6 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         TextFormField(
+                          style: TextStyle(
+                              color: AppColors.background
+                            ),
                           controller: _emailController,
                           validator: (value) =>
                               value!.isEmpty ? 'Please enter email' : null,
@@ -150,6 +153,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         TextFormField(
+                          style: TextStyle(
+                              color: AppColors.background
+                            ),
                           controller: _passwordController,
                           validator: (value) =>
                               value!.isEmpty ? 'Please enter password' : null,
