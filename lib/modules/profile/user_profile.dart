@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/authentication/screen/login_screen.dart';
+import 'package:fyp/modules/authentication/screen/update_screen.dart';
 import 'package:fyp/modules/profile/workout_service.dart';
-import 'package:fyp/modules/profile/workout_stats.dart';
+import 'package:fyp/modules/plan/exercise/screen/workoutSetup_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -46,9 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 30),
-              
+
               // Stats Row with FutureBuilder
               FutureBuilder<Map<String, dynamic>?>(
                 future: _statsFuture,
@@ -58,12 +59,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   } else if (snapshot.hasError || !snapshot.hasData) {
                     return const Text('Failed to load stats');
                   }
-                  
+
                   final data = snapshot.data!;
                   if (data['success'] != true) {
                     return Text(data['message'] ?? 'No data available');
                   }
-                  
+
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -99,9 +100,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                  _buildMenuButton('Account'),
+                  _buildMenuButton('Account', onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UpdateScreen()),
+                    );
+                  }),
                   const SizedBox(height: 15),
-                  _buildMenuButton('Equipment'),
+                  _buildMenuButton('Equipment', onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WorkoutSetupScreen()),
+                    );
+                  }),
                   const SizedBox(height: 30),
                   Center(
                     child: _buildLogoutButton(),
@@ -146,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildMenuButton(String text) {
+  Widget _buildMenuButton(String text, {VoidCallback? onPressed}) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -157,9 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           padding: const EdgeInsets.symmetric(vertical: 16),
         ),
-        onPressed: () {
-          // Add navigation or functionality for each button
-        },
+        onPressed: onPressed,
         child: Text(
           text,
           style: const TextStyle(

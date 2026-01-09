@@ -12,6 +12,8 @@ class WorkoutController {
     final userId = await _storage.read(key: 'userId');
     if (userId == null) return;
 
+    
+
     final today = DateTime.now().toIso8601String().split('T')[0]; // YYYY-MM-DD
 
     final payload = exercises.map((e) => {

@@ -143,5 +143,61 @@
   {
     "question": "how to stay consistent with fitness",
     "answer": "Make it a routine, track goals, celebrate small wins, and find a workout buddy."
+  },
+    {
+    "question": "what are chest exercises?",
+    "answer": "Common chest exercises include push-ups, bench press, chest fly, and incline push-ups."
+  },
+  {
+    "question": "give me chest workouts",
+    "answer": "Try bench press, push-ups, chest fly, and incline push-ups for a solid chest workout."
+  },
+  {
+    "question": "what are leg exercises?",
+    "answer": "Leg exercises include squats, lunges, deadlifts, leg press, and wall sits."
+  },
+  {
+    "question": "give me leg workouts",
+    "answer": "Great leg workouts are squats, lunges, leg press, wall sits, and leg extensions."
+  },
+  {
+    "question": "what are back exercises?",
+    "answer": "Back exercises include pull-ups, deadlifts, seated rows, lat pulldown, and superman."
+  },
+  {
+    "question": "give me back workouts",
+    "answer": "For your back, try lat pulldowns, seated rows, pull-ups, and reverse snow angels."
+  },
+  {
+    "question": "what are shoulder exercises?",
+    "answer": "Shoulder workouts include shoulder press, lateral raises, pike push-ups, and wall slides."
+  },
+  {
+    "question": "give me shoulder workouts",
+    "answer": "Do lateral raises, shoulder press, pike push-ups, and shoulder press machine for shoulders."
+  },
+  {
+    "question": "what are tricep exercises?",
+    "answer": "Tricep exercises include tricep dips, close-grip push-ups, tricep pushdowns, and overhead tricep extension."
+  },
+  {
+    "question": "give me tricep workouts",
+    "answer": "Good tricep workouts are tricep dips, pushdowns, close-grip push-ups, and overhead extensions."
+  },
+  {
+    "question": "what are bicep exercises?",
+    "answer": "Bicep workouts include bicep curls, chin-ups, resistance band curls, and bicep curl machine."
+  },
+  {
+    "question": "give me bicep workouts",
+    "answer": "Try bicep curls, chin-ups, wall-push curls, and resistance band curls for biceps."
+  },
+  {
+    "question": "what are core exercises?",
+    "answer": "Core exercises include plank, leg raises, Russian twists, and crunches."
+  },
+  {
+    "question": "give me core workouts",
+    "answer": "To train your core, do planks, leg raises, Russian twists, and superman holds."
   }
 ]
