@@ -98,8 +98,13 @@ WHERE mi.meal_id = ?;
 
             // Format ingredients
             $ingredientList = array_map(function ($ing) {
-                return round($ing['quantity'], 2) . 'g ' . $ing['ingredient_name'];
+                return  $ing['ingredient_name'];
             }, $ingredients);
+
+            $quantitiesList = array_map(function ($ing) {
+                return round($ing['quantity'], 2);
+            }, $ingredients);
+
 
             $ingredientIdList = array_map(function ($ing) {
                 return $ing['ingredient_id'];  // or use actual ID if needed
@@ -109,10 +114,12 @@ WHERE mi.meal_id = ?;
                 'meal_id' => $meal['meal_id'],
                 'meal_type' => ucfirst($meal['meal_type']),
                 'name' => $meal['meal_name'],
-                'calories' => $meal['calories'] . ' kcal',
+                'calories' => $meal['calories'],
                 'ingredients' => $ingredientList,
-                'ingredients_id' => $ingredientIdList // Add this line
+                'quantities' => $quantitiesList,
+                'ingredients_id' => $ingredientIdList
             ];
+
 
 
             error_log("Added $type meal: {$meal['meal_name']} ({$meal['calories']} kcal)");

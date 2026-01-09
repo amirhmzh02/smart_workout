@@ -12,12 +12,13 @@ try {
     // 1. Insert the meal
     $stmt = $pdo->prepare("
         INSERT INTO meal (meal_name, meal_type, calories, is_custom)
-        VALUES (?, ?, ?, 1)
+        VALUES (?, ?, ?, ?)
     ");
     $stmt->execute([
         $data['name'],
         $data['meal_type'] ?? 'custom', // You might want to pass meal type from frontend
-        $data['calories']
+        $data['calories'],
+        $data['is_custom']
     ]);
     $mealId = $pdo->lastInsertId();
     

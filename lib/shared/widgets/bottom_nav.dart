@@ -93,7 +93,7 @@ class CustomBottomNav extends StatelessWidget {
                     width: 60, // Your desired GIF width
                     height: 60, // Your desired GIF height
                     child: Image.asset(
-                      'assets/gif/workout.gif',
+                      'assets/gif/chat-bot.gif',
                       fit: BoxFit.contain,
                     ),
                   ),

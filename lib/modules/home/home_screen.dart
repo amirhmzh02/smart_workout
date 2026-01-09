@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/home/screen/diary_screen.dart';
+import 'package:fyp/modules/home/screen/ExerciseDiary_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,10 +14,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String userName = 'USER';
+  String _weeklyCalories = "Loading...";
+  String _weeklyDays = "0 days";
+
   @override
   void initState() {
     super.initState();
     _loadUserName();
+    loadWeeklySummary();
   }
 
   Future<void> _loadUserName() async {
@@ -22,6 +29,38 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       userName = name ?? 'User'; // Default to 'User' if no name is found
     });
+  }
+
+  Future<void> loadWeeklySummary() async {
+    final summary = await fetchWeeklyExerciseSummary();
+    setState(() {
+      _weeklyCalories =
+          summary != null ? "${summary['total_calories'] ?? 0} kcal" : "0 kcal";
+      _weeklyDays =
+          summary != null ? "${summary['total_days'] ?? 0} days" : "0 days";
+    });
+  }
+
+  Future<Map<String, dynamic>?> fetchWeeklyExerciseSummary() async {
+    const apiUrl = 'http://$activeIP/get_weekly_exercise_summary.php';
+    final _storage = const FlutterSecureStorage();
+    final userId = await _storage.read(key: 'userId');
+
+    if (userId == null) return null;
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'user_id': userId}),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> resData = jsonDecode(response.body);
+      if (resData['success'] == true) {
+        return resData['data'];
+      }
+    }
+    return null;
   }
 
   @override
@@ -101,64 +140,75 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 20),
 
-              // Placeholder for DateWidget
-              const Placeholder(
-                fallbackHeight: 60,
-                color: AppColors.pink,
-              ),
-
-              const SizedBox(height: 20),
-
               // 2 Small Boxes Row
               Row(
                 children: [
+                  // Make EXERCISE DONE tappable
                   Expanded(
-                    child: _infoBox("EXERCISE DONE", "0 sec"),
-                  ),
-                  const SizedBox(width: 15),
-                  Container(
-                      width: screenWidth * 0.3,
-                      height: screenHeight * 0.15,
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const DiaryScreen()),
-                          );
-                        },
-                        child: Container(
-                          width: screenWidth * 0.3,
-                          height: screenHeight * 0.15,
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius: BorderRadius.circular(24),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ExerciseDiaryScreen(),
                           ),
-                          child: const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('Diet',
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontFamily: AppFonts.primary,
-                                        fontWeight: AppFonts.regular,
-                                        color: AppColors.pink)),
-                                Text('plan',
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontFamily: AppFonts.primary,
-                                        fontWeight: AppFonts.regular,
-                                        color: Colors.black)),
-                              ],
-                            ),
+                        );
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          exerciseSummaryBox("$_weeklyDays", "$_weeklyCalories")
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 15),
+                  // Diet plan card
+                  Container(
+                    width: screenWidth * 0.3,
+                    height: screenHeight * 0.15,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const DiaryScreen()),
+                        );
+                      },
+                      child: Container(
+                        width: screenWidth * 0.3,
+                        height: screenHeight * 0.15,
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Diet',
+                                  style: TextStyle(
+                                      fontSize: 24,
+                                      fontFamily: AppFonts.primary,
+                                      fontWeight: AppFonts.regular,
+                                      color: AppColors.pink)),
+                              Text('plan',
+                                  style: TextStyle(
+                                      fontSize: 24,
+                                      fontFamily: AppFonts.primary,
+                                      fontWeight: AppFonts.regular,
+                                      color: Colors.black)),
+                            ],
                           ),
                         ),
-                      ))
+                      ),
+                    ),
+                  ),
                 ],
               ),
 
@@ -243,37 +293,62 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _infoBox(String title, String value, {bool isButton = false}) {
+  Widget exerciseSummaryBox(String days, String cal) {
     return Container(
-      height: 120,
+      height: 140,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      padding: const EdgeInsets.all(12),
-      child: Center(
-        child: isButton
-            ? Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.pink,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
-                  Text(value,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold)),
-                ],
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _exerciseRow("EXERCISE\nDONE", days),
+          const Divider(height: 1, color: Colors.pink, thickness: 2),
+          _exerciseRow("CALORIE\nBURN", cal),
+        ],
       ),
+    );
+  }
+
+  Widget _exerciseRow(String title, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: AppColors.background,
+            fontFamily:
+                AppFonts.primary, // Optional: use a futuristic font like Orbitron
+          ),
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: AppColors.background,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: AppFonts.secondary,
+                ),
+              ),
+            ),
+            
+            
+          ],
+        ),
+      ],
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/plan/diet/screen/diet_screen.dart';
-import 'package:fyp/modules/plan/exercise_screen.dart';
+import 'package:fyp/modules/plan/exercise/screen/workout_screen.dart';
 
 class PlanTabWidget extends StatefulWidget {
   const PlanTabWidget({super.key});
@@ -49,7 +49,7 @@ class _PlanTabWidgetState extends State<PlanTabWidget>
             ),
             indicatorSize:
                 TabBarIndicatorSize.label, // Underline matches text width
-            labelColor: AppColors.pink, // Active tab text color
+            labelColor: AppColors.white, // Active tab text color
             unselectedLabelColor: AppColors.white, // Inactive tab text color
             labelStyle: TextStyle(
               fontFamily: AppFonts.primary,
@@ -62,8 +62,8 @@ class _PlanTabWidgetState extends State<PlanTabWidget>
               fontSize: 16, // Added font size for consistency
             ),
             tabs: const [
-              Tab(text: 'EXERCISE'),
               Tab(text: 'DIET'),
+              Tab(text: 'EXERCISE'),
             ],
           ),
         ),
@@ -73,8 +73,9 @@ class _PlanTabWidgetState extends State<PlanTabWidget>
           child: TabBarView(
             controller: _tabController,
             children: const [
-              ExerciseScreen(),
               DietScreen(),
+              ExerciseScreen(),
+              
             ],
           ),
         ),

@@ -100,7 +100,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                       'TOTAL CALORIES',
                       style: TextStyle(
                         color: AppColors.white,
-                        fontSize: 18,
+                        fontSize: 15,
                         fontFamily: AppFonts.primary,
                       ),
                     ),
@@ -119,7 +119,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                           const TextSpan(
                             text: ' KCAL',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 10,
                               fontFamily: AppFonts.primary,
                               fontWeight: FontWeight.normal,
                               color: AppColors.pink,
@@ -182,38 +182,59 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
               Text(
                 meal.mealType.toUpperCase(),
                 style: const TextStyle(
-                  color: AppColors.pink,
+                  color: AppColors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   fontFamily: AppFonts.primary,
                 ),
               ),
-              Text(
-                meal.mealname.isNotEmpty ? meal.mealname : '(No name)',
-                style: const TextStyle(
-                  color: AppColors.pink,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: AppFonts.primary,
+              Align(
+                alignment: Alignment.centerRight,
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: meal.calories
+                            .toString(), // No need to remove ' kcal'
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontFamily: AppFonts.primary,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
+                      ),
+                      const TextSpan(
+                        text: ' KCAL',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: AppFonts.primary,
+                          fontWeight: FontWeight.normal,
+                          color: AppColors.pink,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
 
+          Text(
+            meal.mealname.isNotEmpty ? meal.mealname : '(No name)',
+            style: const TextStyle(
+              color: AppColors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              fontFamily: AppFonts.secondary,
+            ),
+          ),
+
           // Ingredients
           if (meal.ingredients.isNotEmpty)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Ingredients:',
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 14,
-                    fontFamily: AppFonts.primary,
-                  ),
-                ),
                 const SizedBox(height: 4),
                 Text(
                   _formatIngredients(meal),
@@ -226,35 +247,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
               ],
             ),
           const SizedBox(height: 12),
-
-          // Calories
-          Align(
-            alignment: Alignment.centerRight,
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: meal.calories.toString(), // No need to remove ' kcal'
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontFamily: AppFonts.primary,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.white,
-                    ),
-                  ),
-                  const TextSpan(
-                    text: ' KCAL',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: AppFonts.primary,
-                      fontWeight: FontWeight.normal,
-                      color: AppColors.pink,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );

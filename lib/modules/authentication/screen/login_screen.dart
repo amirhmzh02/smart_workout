@@ -3,7 +3,8 @@ import 'package:fyp/modules/global_import.dart';
 import 'package:fyp/modules/authentication/controller/login_controller.dart';
 import 'package:fyp/modules/authentication/screen/signup_screen.dart';
 import 'package:fyp/modules/FirtTimeUser/firstTimeUser_screen.dart';
-import 'package:fyp/modules/FirtTimeUser/firstTimeUser_screen.dart';
+import 'package:fyp/modules/authentication/screen/update_screen.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -121,6 +122,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         TextFormField(
+                          style: TextStyle(
+                              color: AppColors.background
+                            ),
                           controller: _emailController,
                           validator: (value) =>
                               value!.isEmpty ? 'Please enter email' : null,
@@ -150,6 +154,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         TextFormField(
+                          style: TextStyle(
+                              color: AppColors.background
+                            ),
                           controller: _passwordController,
                           validator: (value) =>
                               value!.isEmpty ? 'Please enter password' : null,
@@ -237,7 +244,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.05),
+                SizedBox(height: screenHeight * 0.02),
+
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      WidgetSpan(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const UpdateScreen()),
+                            );
+                          },
+                          child: Text(
+                            'Forgot Password',
+                            style: TextStyle(
+                              color: AppColors.pink,
+                              fontWeight: AppFonts.semiBold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

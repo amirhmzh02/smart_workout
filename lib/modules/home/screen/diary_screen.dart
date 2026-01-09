@@ -168,13 +168,16 @@ class _DiaryScreenState extends State<DiaryScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DiaryDetailScreen(selectedDate: fullDate, date: date,),
+            builder: (context) => DiaryDetailScreen(
+              selectedDate: fullDate,
+              date: date,
+            ),
           ),
         );
       },
       child: Container(
         // your UI code here, using date and calories as before
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
         decoration: BoxDecoration(
           color: AppColors.lightbackground,
           borderRadius: BorderRadius.circular(15),
@@ -185,7 +188,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
             Text(
               date,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 25,
                 fontFamily: AppFonts.primary,
                 fontWeight: FontWeight.bold,
               ),
@@ -193,6 +196,18 @@ class _DiaryScreenState extends State<DiaryScreen> {
             RichText(
               text: TextSpan(
                 children: [
+                  // Add the image here
+                  WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: Image.asset(
+                        'assets/icons/eat.png', // change this to your image path
+                        width: 25,
+                        height: 25,
+                      ),
+                    ),
+                  ),
                   TextSpan(
                     text: '$calories ',
                     style: const TextStyle(
@@ -205,7 +220,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                   TextSpan(
                     text: 'KCAL',
                     style: const TextStyle(
-                      fontSize: 20,
+                      fontSize: 10,
                       fontFamily: AppFonts.primary,
                       fontWeight: FontWeight.normal,
                       color: AppColors.pink,
