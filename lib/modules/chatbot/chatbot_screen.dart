@@ -35,7 +35,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.0.31:5000/chat"),
+        Uri.parse("http://192.168.0.22:5000/chat"),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({"message": message}),
       );

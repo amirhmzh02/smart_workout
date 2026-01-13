@@ -6,7 +6,7 @@ abstract class IP {
   static const String rumahsewa = "192.168.0.26/Bolt-API";
   static const String other = "192.168.118.165/Bolt-API";  // Just IP (no path)
   static const String utem = "10.131.78.207/Bolt-API";
-    static const String pc = "192.168.0.31/Bolt-API";
+    static const String pc = "192.168.0.22/Bolt-API";
     static const String domain = "boltapi.free.nf/Bolt-API/";
 
 }

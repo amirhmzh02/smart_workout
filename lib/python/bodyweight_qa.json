@@ -1,18 +1,62 @@
 [
   {
     "question": "what exercises can I do without equipment",
-    "answer": "You can try push-ups, squats, lunges, planks, burpees, jumping jacks, mountain climbers, and crunches, all without equipment."
+    "answer": "You can do push-ups, squats, lunges, planks, jumping jacks, mountain climbers, and crunches without equipment."
   },
   {
     "question": "best bodyweight exercises",
-    "answer": "Top bodyweight moves include push-ups, squats, lunges, planks, glute bridges, and jumping jacks."
+    "answer": "Some of the best bodyweight exercises are push-ups, squats, lunges, planks, and burpees."
   },
   {
     "question": "how to build muscle without weights",
-    "answer": "Use bodyweight resistance moves like push-ups, squats, lunges, dips, and increase reps or time under tension."
+    "answer": "You can build muscle using bodyweight exercises by increasing repetitions, slowing down movements, and training consistently."
   },
   {
     "question": "can I get fit with no equipment",
-    "answer": "Yes! Consistent bodyweight training combined with good nutrition can help you get stronger and leaner."
+    "answer": "Yes, bodyweight workouts can help improve strength, endurance, and fitness without any equipment."
+  },
+  {
+    "question": "how to do a push up",
+    "answer": "Start in a plank position, place your hands shoulder-width apart, lower your body until your chest is close to the floor, then push back up."
+  },
+  {
+    "question": "how to do a squat",
+    "answer": "Stand with feet shoulder-width apart, push your hips back, bend your knees, lower your body, then stand back up."
+  },
+  {
+    "question": "how to do a lunge",
+    "answer": "Step one foot forward, lower your hips until both knees are bent, then push back to the starting position."
+  },
+  {
+    "question": "how to do a plank",
+    "answer": "Place your forearms on the floor, keep your body straight from head to heels, and hold the position."
+  },
+  {
+    "question": "how to do jumping jacks",
+    "answer": "Start standing, jump while spreading your legs and raising your arms, then jump back to the starting position."
+  },
+  {
+    "question": "how to do mountain climbers",
+    "answer": "Start in a plank position and quickly bring one knee toward your chest, then switch legs repeatedly."
+  },
+  {
+    "question": "how to do crunches",
+    "answer": "Lie on your back, bend your knees, lift your shoulders off the floor using your core, then slowly lower down."
+  },
+  {
+    "question": "how to do burpees",
+    "answer": "Start standing, squat down, jump into a plank, do a push-up, jump back up, then jump vertically."
+  },
+  {
+    "question": "how many reps should I do for bodyweight exercises",
+    "answer": "Beginners can start with 10 to 15 reps per exercise and increase gradually as strength improves."
+  },
+  {
+    "question": "how often should I do bodyweight workouts",
+    "answer": "You can do bodyweight workouts 3 to 5 times per week, depending on your fitness level."
+  },
+  {
+    "question": "are bodyweight exercises good for beginners",
+    "answer": "Yes, bodyweight exercises are safe, effective, and easy to modify for beginners."
   }
 ]
